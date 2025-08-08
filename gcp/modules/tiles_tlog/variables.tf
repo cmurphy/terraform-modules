@@ -211,3 +211,13 @@ variable "enable_backend_service_logging" {
   type        = bool
   default     = true
 }
+
+variable "spanner_timeseries_role_id" {
+  description = "name of the project role for managing timeseries entries for Spanner"
+  type        = string
+}
+
+variable "monitoring_role_id" {
+  description = "name of the project role for managing metrics"
+  type        = string
+}
