@@ -21,6 +21,7 @@ terraform {
     google = {
       version = "7.21.0"
       source  = "hashicorp/google"
+      configuration_aliases = [google.googleorg] // DELETE BEFORE COMMIT
     }
   }
 }

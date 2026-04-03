@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 The Sigstore Authors
+ * Copyright 2026 The Sigstore Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,45 +23,22 @@ variable "project_id" {
   }
 }
 
-variable "region" {
-  type        = string
-  description = "GCP region"
-}
-
 variable "single_region" {
   description = "Whether this module instance is only deployed in one region, and therefore in charge of managing its own IP address and DNS record but not other load balancer resources."
   type        = bool
-  default     = true
+  default     = false
+}
+
+variable "lb_address_name" {
+  description = "Name of the global address of the load balancer. If not specified, defaults to 'fulcio-CLUSTER_NAME-gce-ext-lb'."
+  type        = string
+  default     = ""
 }
 
 variable "cluster_name" {
   description = "The name to give the new Kubernetes cluster."
   type        = string
-}
-
-// KMS
-variable "timestamp_keyring_name" {
-  type        = string
-  description = "Name of KMS keyring for Timestamp Authority"
-  default     = "timestamp-keyring"
-}
-
-variable "timestamp_encryption_key_name" {
-  type        = string
-  description = "Name of KMS key for encrypting Tink private key for Timestamp Authority"
-  default     = "timestamp-key-encryption-key"
-}
-
-variable "timestamp_ca_key_name" {
-  type        = string
-  description = "Name of KMS key for self-signed CA for Timestamp Authority"
-  default     = "timestamp-ca-key"
-}
-
-variable "kms_location" {
-  type        = string
-  description = "Location of KMS keyring"
-  default     = "global"
+  default     = ""
 }
 
 variable "dns_zone_name" {
@@ -74,11 +51,22 @@ variable "dns_domain_name" {
   type        = string
 }
 
-// Network
+variable "manage_dns_a_record" {
+  description = "Whether this module is in charge of managing the DNS A record. This is to enable transitioning from having DNS managed in a single region to managing the same record globally for all regions."
+  type        = bool
+  default     = true
+}
+
 variable "enable_cloud_armor" {
   description = "Whether to create a Cloud Armor security policy."
   type        = bool
   default     = false
+}
+
+variable "cloud_armor_policy_name" {
+  description = "Name of the Cloud Armor policy."
+  type        = string
+  default     = "fulcio-service-security-policy"
 }
 
 variable "cloud_armor_rules" {
@@ -128,22 +116,22 @@ variable "enable_ssl_policy" {
   default     = false
 }
 
-variable "network" {
-  description = "VPC network in which the GKE cluster lives"
+variable "ssl_policy_name" {
+  description = "Name of the SSL policy."
   type        = string
-  default     = "default"
-}
-
-variable "cluster_network_tag" {
-  description = "GKE cluster network tag for firewall"
-  type        = string
-  default     = ""
+  default     = "fulcio-ingress-ssl-policy"
 }
 
 variable "http_service_port" {
   description = "The internal HTTP port for the service pod"
   type        = string
   default     = "5555"
+}
+
+variable "grpc_service_port" {
+  description = "The internal HTTP port for the service pod"
+  type        = string
+  default     = "5554"
 }
 
 variable "enable_healthcheck_logging" {
@@ -159,7 +147,13 @@ variable "network_endpoint_group_zones" {
 }
 
 variable "network_endpoint_group_name" {
-  description = "Name of the NEG that will be created for the HTTP service by the timestamp Kubernetes service."
+  description = "Name of the NEG that will be created for the HTTP service by the Fulcio Kubernetes service."
+  type        = string
+  default     = ""
+}
+
+variable "network_endpoint_group_name_grpc" {
+  description = "Name of the NEG that will be created for the gRPC service by the Fulcio Kubernetes service."
   type        = string
   default     = ""
 }

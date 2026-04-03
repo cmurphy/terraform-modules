@@ -28,6 +28,12 @@ variable "region" {
   description = "GCP region"
 }
 
+variable "single_region" {
+  description = "Whether this module instance is only deployed in one region, and therefore in charge of managing its own IP address and DNS record but not other load balancer resources."
+  type        = bool
+  default     = true
+}
+
 variable "cluster_name" {
   description = "The name to give the new Kubernetes cluster."
   type        = string
@@ -132,4 +138,64 @@ variable "enable_ssl_policy" {
   description = "Whether to create a SSL policy."
   type        = bool
   default     = false
+}
+
+variable "network" {
+  description = "VPC network in which the GKE cluster lives"
+  type        = string
+  default     = "default"
+}
+
+variable "cluster_network_tag" {
+  description = "GKE cluster network tag for firewall"
+  type        = string
+  default     = ""
+}
+
+variable "http_service_port" {
+  description = "The internal HTTP port for the service pod"
+  type        = string
+  default     = "5555"
+}
+
+variable "grpc_service_port" {
+  description = "The internal HTTP port for the service pod"
+  type        = string
+  default     = "5554"
+}
+
+variable "enable_healthcheck_logging" {
+  description = "Whether to enable logging for the HTTP health check"
+  type        = bool
+  default     = true
+}
+
+variable "network_endpoint_group_zones" {
+  type        = list(string)
+  description = "zones where the NEGs live. NEGs will not exist until the Kubernetes service they belong to exists and creates them. This value must be set to empty if NEGs are not expected to exist yet, and then can later be updated."
+  default     = []
+}
+
+variable "network_endpoint_group_name" {
+  description = "Name of the NEG that will be created for the HTTP service by the Fulcio Kubernetes service."
+  type        = string
+  default     = ""
+}
+
+variable "network_endpoint_group_name_grpc" {
+  description = "Name of the NEG that will be created for the gRPC service by the Fulcio Kubernetes service."
+  type        = string
+  default     = ""
+}
+
+variable "backend_service_max_rps" {
+  description = "Max requests per second that a single backend instance can handle."
+  type        = number
+  default     = 100
+}
+
+variable "enable_backend_service_logging" {
+  description = "Whether to enable logging for the HTTP backend service."
+  type        = bool
+  default     = true
 }

@@ -53,6 +53,28 @@ variable "dns_domain_name" {
 }
 
 /********************************/
+/********* LOAD BALANCER ********/
+/********************************/
+
+variable "single_region" {
+  description = "Whether this module instance is only deployed in one region, and therefore in charge of managing its own IP address and DNS record but not other load balancer resources."
+  type        = bool
+  default     = true
+}
+
+variable "enable_loadbalancer_logging" {
+  description = "Whether to enable logging for the HTTP health checks and backend services for Fulcio, TSA, Dex"
+  type        = bool
+  default     = true
+}
+
+variable "network_endpoint_group_zones" {
+  type        = list(string)
+  description = "zones where the NEGs live. NEGs will not exist until the Kubernetes service they belong to exists and creates them. This value must be set to empty if NEGs are not expected to exist yet, and then can later be updated."
+  default     = []
+}
+
+/********************************/
 /************ BASTION ***********/
 /********************************/
 
@@ -534,6 +556,24 @@ variable "fulcio_enable_ssl_policy" {
   default     = false
 }
 
+variable "fulcio_network_endpoint_group_name" {
+  description = "Name of the NEG that will be created for the HTTP service by the Fulcio Kubernetes service."
+  type        = string
+  default     = ""
+}
+
+variable "fulcio_network_endpoint_group_name_grpc" {
+  description = "Name of the NEG that will be created for the gRPC service by the Fulcio Kubernetes service."
+  type        = string
+  default     = ""
+}
+
+variable "fulcio_backend_service_max_rps" {
+  description = "Max requests per second that a single Fulcio backend instance can handle."
+  type        = number
+  default     = 100
+}
+
 /********************************/
 /*********** REKOR v1 ***********/
 /********************************/
@@ -664,6 +704,18 @@ variable "timestamp_enable_ssl_policy" {
   default     = false
 }
 
+variable "timestamp_network_endpoint_group_name" {
+  description = "Name of the NEG that will be created for the HTTP service by the timestamp Kubernetes service."
+  type        = string
+  default     = ""
+}
+
+variable "timestamp_backend_service_max_rps" {
+  description = "Max requests per second that a single TSA backend instance can handle."
+  type        = number
+  default     = 100
+}
+
 /********************************/
 /************* CTLOG ************/
 /********************************/
@@ -767,6 +819,18 @@ variable "dex_enable_ssl_policy" {
   description = "Whether to create a SSL policy for Dex."
   type        = bool
   default     = false
+}
+
+variable "dex_network_endpoint_group_name" {
+  description = "Name of the NEG that will be created for the HTTP service by the Dex Kubernetes service."
+  type        = string
+  default     = ""
+}
+
+variable "dex_backend_service_max_rps" {
+  description = "Max requests per second that a single Dex backend instance can handle."
+  type        = number
+  default     = 100
 }
 
 /********************************/

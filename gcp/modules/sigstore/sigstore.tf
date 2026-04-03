@@ -284,6 +284,10 @@ module "rekor" {
 module "fulcio" {
   source = "../fulcio"
 
+  providers = {
+    google.googleorg = google.googleorg
+  }
+
   region       = var.region
   project_id   = var.project_id
   cluster_name = var.cluster_name
@@ -306,6 +310,17 @@ module "fulcio" {
   enable_cloud_armor         = var.fulcio_enable_cloud_armor
   enable_ssl_policy          = var.fulcio_enable_ssl_policy
 
+  // Load balancing
+  single_region                    = var.single_region
+  network                          = module.network.network_self_link
+  cluster_network_tag              = var.cluster_network_tag
+  enable_healthcheck_logging       = var.enable_loadbalancer_logging
+  network_endpoint_group_zones     = var.network_endpoint_group_zones
+  network_endpoint_group_name      = var.fulcio_network_endpoint_group_name
+  network_endpoint_group_name_grpc = var.fulcio_network_endpoint_group_name
+  backend_service_max_rps          = var.fulcio_backend_service_max_rps
+  enable_backend_service_logging   = var.enable_loadbalancer_logging
+
   depends_on = [
     module.gke-cluster,
     module.network,
@@ -315,6 +330,10 @@ module "fulcio" {
 
 module "timestamp" {
   source = "../timestamp"
+
+  providers = {
+    google.googleorg = google.googleorg
+  }
 
   region       = var.region
   project_id   = var.project_id
@@ -338,6 +357,16 @@ module "timestamp" {
   enable_adaptive_protection = var.timestamp_enable_adaptive_protection
   enable_cloud_armor         = var.timestamp_enable_cloud_armor
   enable_ssl_policy          = var.timestamp_enable_ssl_policy
+
+  // Load balancing
+  single_region                  = var.single_region
+  network                        = module.network.network_self_link
+  cluster_network_tag            = var.cluster_network_tag
+  enable_healthcheck_logging     = var.enable_loadbalancer_logging
+  network_endpoint_group_zones   = var.network_endpoint_group_zones
+  network_endpoint_group_name    = var.timestamp_network_endpoint_group_name
+  backend_service_max_rps        = var.timestamp_backend_service_max_rps
+  enable_backend_service_logging = var.enable_loadbalancer_logging
 
   depends_on = [
     module.gke-cluster,
@@ -519,7 +548,12 @@ module "standalone_mysqls" {
 module "dex" {
   source = "../dex"
 
+  providers = {
+    google.googleorg = google.googleorg
+  }
+
   project_id = var.project_id
+  region     = var.region
 
   cluster_name = var.cluster_name
 
@@ -532,6 +566,16 @@ module "dex" {
   enable_adaptive_protection = var.dex_enable_adaptive_protection
   enable_cloud_armor         = var.dex_enable_cloud_armor
   enable_ssl_policy          = var.dex_enable_ssl_policy
+
+  // Load balancing
+  single_region                  = var.single_region
+  network                        = module.network.network_self_link
+  cluster_network_tag            = var.cluster_network_tag
+  enable_healthcheck_logging     = var.enable_loadbalancer_logging
+  network_endpoint_group_zones   = var.network_endpoint_group_zones
+  network_endpoint_group_name    = var.dex_network_endpoint_group_name
+  backend_service_max_rps        = var.dex_backend_service_max_rps
+  enable_backend_service_logging = var.enable_loadbalancer_logging
 
   depends_on = [
     module.gke-cluster,

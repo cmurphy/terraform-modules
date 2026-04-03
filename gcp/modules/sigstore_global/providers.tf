@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = "1.14.2"
+provider "google" {
+  project = var.project_id
+}
 
-  required_providers {
-    google = {
-      version = "7.21.0"
-      source  = "hashicorp/google"
-      configuration_aliases = [google.googleorg] // DELETE BEFORE COMMIT
-    }
-  }
+provider "google" {
+  alias        = "googleorg"
+  access_token = var.personal_access_token
+  project      = "colleenmurphy-testing-410318"
+  region       = "us-central1"
+}
+
+variable "personal_access_token" {
+  type        = string
+  description = "Short-lived access token for the personal GCP organization"
+  sensitive   = true
 }

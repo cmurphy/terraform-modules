@@ -23,45 +23,22 @@ variable "project_id" {
   }
 }
 
-variable "region" {
-  type        = string
-  description = "GCP region"
-}
-
 variable "single_region" {
   description = "Whether this module instance is only deployed in one region, and therefore in charge of managing its own IP address and DNS record but not other load balancer resources."
   type        = bool
-  default     = true
+  default     = false
+}
+
+variable "lb_address_name" {
+  description = "Name of the global address of the load balancer. If not specified, defaults to 'timestamp-CLUSTER_NAME-gce-ext-lb'."
+  type        = string
+  default     = ""
 }
 
 variable "cluster_name" {
   description = "The name to give the new Kubernetes cluster."
   type        = string
-}
-
-// KMS
-variable "timestamp_keyring_name" {
-  type        = string
-  description = "Name of KMS keyring for Timestamp Authority"
-  default     = "timestamp-keyring"
-}
-
-variable "timestamp_encryption_key_name" {
-  type        = string
-  description = "Name of KMS key for encrypting Tink private key for Timestamp Authority"
-  default     = "timestamp-key-encryption-key"
-}
-
-variable "timestamp_ca_key_name" {
-  type        = string
-  description = "Name of KMS key for self-signed CA for Timestamp Authority"
-  default     = "timestamp-ca-key"
-}
-
-variable "kms_location" {
-  type        = string
-  description = "Location of KMS keyring"
-  default     = "global"
+  default     = ""
 }
 
 variable "dns_zone_name" {
@@ -74,11 +51,22 @@ variable "dns_domain_name" {
   type        = string
 }
 
-// Network
+variable "manage_dns_a_record" {
+  description = "Whether this module is in charge of managing the DNS A record. This is to enable transitioning from having DNS managed in a single region to managing the same record globally for all regions."
+  type        = bool
+  default     = true
+}
+
 variable "enable_cloud_armor" {
   description = "Whether to create a Cloud Armor security policy."
   type        = bool
   default     = false
+}
+
+variable "cloud_armor_policy_name" {
+  description = "Name of the Cloud Armor policy."
+  type        = string
+  default     = "tsa-service-security-policy"
 }
 
 variable "cloud_armor_rules" {
@@ -126,6 +114,12 @@ variable "enable_ssl_policy" {
   description = "Whether to create a SSL policy."
   type        = bool
   default     = false
+}
+
+variable "ssl_policy_name" {
+  description = "Name of the SSL policy."
+  type        = string
+  default     = "tsa-ingress-ssl-policy"
 }
 
 variable "network" {
